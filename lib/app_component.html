@@ -1,0 +1,79 @@
+<link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+
+<body>
+    <section class="s1">
+        <div class="greetings-wrapper">
+            <div class="main-container">
+                <h1>Hi, I'm Captain Soap</h1>
+            </div>
+        </div>
+    </section>
+    <template [ngIf]="showBrowser">
+        <section class="s2">
+            <div class="browser-wrapper">
+                <div class="scaffold">
+                    <div class="scaffold-tabs-container">
+                        <div class="tab1" [routerLink]="RoutePaths.about.toUrl()" [routerLinkActive]="'active-route'">
+                            <p id="about">About</p>
+                        </div>
+                        <div class="tab2" [routerLink]="RoutePaths.skills.toUrl()" [routerLinkActive]="'active-route'">
+                            <p id="skills">Skills</p>
+                        </div>
+                        <div class="tab3" [routerLink]="RoutePaths.projects.toUrl()"
+                            [routerLinkActive]="'active-route'">
+                            <p id="projects">Projects</p>
+                        </div>
+                        <div class="tab4" [routerLink]="RoutePaths.contact.toUrl()" [routerLinkActive]="'active-route'">
+                            <p id="contact">Contact</p>
+                        </div>
+                    </div>
+                    <div class="scaffold-icons">
+                        <div id="dot-1" class="browser-dot"></div>
+                        <div id="dot-2" class="browser-dot"></div>
+                        <div id="dot-3" class="browser-dot"></div>
+                    </div>
+                </div>
+                <div class="nav-bar">
+                    <div class="nav-left-icons">
+                        <material-icon icon="arrow_back"></material-icon>
+                        <material-icon light icon="arrow_forward"></material-icon>
+                        <material-icon icon="refresh"></material-icon>
+                    </div>
+                    <div class="nav-url-container">
+                        <p>Lorem, ipsum dolor.</p>
+                    </div>
+                    <div class="nav-right-icons">
+                        <material-icon icon="extension"></material-icon>
+                        <material-icon icon="account_circle"></material-icon>
+                        <material-icon icon="settings"></material-icon>
+                    </div>
+                </div>
+                <div class="browser-body">
+                    <router-outlet [routes]="Routes.all"></router-outlet>
+                </div>
+            </div>
+        </section>
+    </template>
+    <template [ngIf]="!showBrowser">
+        <div class="main-container">
+            <div class="phone-wrapper">
+                <div class="phone-frame">
+                    <div class="phone-content">
+                        <div class="notification-bar">
+                            <div class="phone-punch-hole"></div>
+                            <div class="notification-bar-icons">
+                                <material-icon class="custom-icon-size" icon="vibration"></material-icon>
+                                <material-icon class="custom-icon-size" icon="network_wifi"></material-icon>
+                                <material-icon class="custom-icon-size" icon="signal_cellular_4_bar"></material-icon>
+                                <material-icon class="custom-icon-size" icon="battery_charging_full"></material-icon>
+                            </div>
+                        </div>
+                        <div class="phone-body">
+                            <app-body></app-body>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </template>
+</body>

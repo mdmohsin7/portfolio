@@ -1,0 +1,30 @@
+<material-drawer temporary #drawer="drawer" [class.custom-width]="true" [attr.overlay]=''>
+  <material-list *deferredContent>
+    <div group>
+      <div label>Menu</div>
+      <material-list-item (trigger)="drawer.toggle()" [routerLink]="RoutePaths.about.toUrl()">About
+      </material-list-item>
+      <material-list-item (trigger)="drawer.toggle()" [routerLink]="RoutePaths.skills.toUrl()">Skills
+      </material-list-item>
+      <material-list-item>Projects
+      </material-list-item>
+      <material-list-item>Contact
+      </material-list-item>
+    </div>
+  </material-list>
+</material-drawer>
+<div class="material-content">
+  <header class="material-header shadow">
+    <div class="material-header-row">
+      <material-button class="material-drawer-button" icon (trigger)="drawer.toggle()">
+        <material-icon icon="menu"></material-icon>
+      </material-button>
+      <span class="material-header-title">Mobile Layout</span>
+      <div class="material-spacer"></div>
+    </div>
+  </header>
+  <div class="controls">
+    <h3>Options</h3>
+    <router-outlet [routes]="Routes.all"></router-outlet>
+  </div>
+</div>

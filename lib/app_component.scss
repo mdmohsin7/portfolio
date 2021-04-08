@@ -1,0 +1,267 @@
+@import 'package:angular_components/css/material/material';
+@import 'package:angular_components/material_icon/mixins';
+
+:host {
+  --mainColor: #eaeaea;
+  --secondaryColor: #fff;
+  --mainText: black;
+  --secondaryText: #4b5156;
+  --borderColor: #c1c1c1;
+}
+
+html, body {
+  padding: 0;
+  margin: 0;
+}
+
+h1, h2, h3, h4, h5, h6, strong {
+  color: var(--mainText);
+  font-family: 'Russo One', sans-serif;
+  font-weight: 500;
+}
+
+p, li, label, span, input, textarea {
+  color: var(--secondaryText);
+  font-family: 'Roboto Mono', monospace;
+}
+
+p {
+  margin: 0;
+  padding: 0;
+}
+
+a {
+  text-decoration: none;
+  color: #17a2b8;
+}
+
+ul {
+  list-style: none;
+}
+
+h1 {
+  font-size: 54px;
+}
+
+h2 {
+  font-size: 36px;
+}
+
+h3 {
+  font-size: 28px;
+}
+
+h4 {
+  font-size: 24px;
+}
+
+h5 {
+  font-size: 20px;
+}
+
+h6 {
+  font-size: 16px;
+}
+
+.s1 {
+  background-color: var(--mainColor);
+  border-bottom: 1px solid var(--borderColor);
+  overflow: auto;
+}
+
+.s2 {
+  background-color: var(--secondaryColor);
+  border-bottom: 1px solid var(--borderColor);
+  overflow: auto;
+}
+
+.main-container {
+  /* width: 1200px; */
+  margin: 0 auto;
+}
+
+.greetings-wrapper {
+  display: grid;
+  text-align: center;
+  align-content: center;
+  min-height: 8rem;
+  border: 2px dashed red;
+}
+
+.scaffold {
+  grid-area: scaffold;
+  text-indent: 2px;
+  min-width: 4rem;
+  /* height: 78%; */
+  /* background-color: rgb(146, 146, 146); */
+  background-color: var(--mainColor);
+  /* border: 2px dashed brown; */
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+}
+
+.scaffold-icons {
+  display: flex;
+  flex-direction: row;
+}
+
+.scaffold-tabs-container {
+  display: flex;
+  flex-direction: row;
+  width: 70%;
+}
+
+.nav-bar {
+  grid-area: navigation;
+  background-color: var(--mainColor);
+  /* border: 2px dashed green; */
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.nav-url-container {
+  background-color: rgb(163, 162, 162);;
+  width: 72%;
+  padding: 0.3em 0.6em;
+  border-radius: 0.4em;
+}
+
+.nav-right-icons, .nav-left-icons {
+  display: flex;
+  flex-direction: row;
+  width: 12%;
+  justify-content: space-evenly;
+}
+
+.material-icons {
+  height: 0.6rem;
+  width: 0.6rem;
+  margin: 0.4rem;
+}
+
+.browser-body {
+  grid-area: body;
+  border: 2px dashed orange;
+}
+
+.browser-wrapper {
+  display: grid;
+  grid-template-columns: 1fr;
+  grid-template-rows: 2.6em 2.6em 24em;
+  /* gap: 6px; */
+  grid-template-areas: "scaffold" "navigation" "body";
+  margin: 2% 10%;
+}
+
+@media screen and (max-width: 100%) and (height: 100%){
+  .main-container {
+    width: 85%;
+    height: 100%;
+  }
+}
+
+.tab1, .tab2, .tab3, .tab4 {
+  background-color: rgb(163, 162, 162);
+  border-top-left-radius: 0.5rem;
+  border-top-right-radius: 0.5rem;
+  width: 26%;
+  height: 2em;
+  border-right-width: 1px;
+  border-right-style: solid;
+  border-right-color: rgb(48, 46, 46);
+  border-left-width: 1px;
+  border-left-style: solid;
+  border-left-color: rgb(48, 46, 46);
+}
+
+.active-route {
+  background-color: var(--mainColor);
+}
+
+#about, #project, #skills, #contact {
+  margin: 5px;
+}
+
+#dot-3 {
+  background-color: #FC6058;
+}
+
+#dot-2 {
+  background-color: #FEC02F;
+}
+
+#dot-1 {
+  background-color: #2ACA3E;
+}
+
+.browser-dot {
+  background-color: black;
+  height: 0.8rem;
+  width: 0.8rem;
+  border-radius: 50%;
+  margin: 0.4rem;
+  -webkit-box-shadow: -1px 1px 3px -1px rgba(0, 0, 0, 0.75);
+  -moz-box-shadow: -1px 1px 3px -1px rgba(0, 0, 0, 0.75);
+  box-shadow: -1px 1px 3px -1px rgba(0, 0, 0, 0.75);
+}
+
+/* Phone Wrapper */
+.phone-wrapper{
+  margin: auto;
+  height: 41rem;
+  width: 90%;
+  position: relative;
+  background-color:whitesmoke;
+}
+
+.phone-frame{
+  height: 40rem;
+  border: 5px solid black;
+  border-radius: 5%;
+}
+
+.phone-content{
+  display: grid;
+  grid-template-columns: 1fr;
+  grid-template-rows: 1.5em 22em;
+  grid-template-areas: "notification-bar" "phone-body";
+}
+
+.notification-bar{
+  grid-area: notification-bar;
+  // border: 2px dashed green;
+  height: 1rem;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+}
+
+.phone-punch-hole{
+  margin-left: 0.6rem;
+  margin-top: 0.9px;
+  height: 1rem;
+  width: 2.1rem;
+  border-radius: 30%;
+  background-color: black;
+}
+
+.custom-icon-size {
+  @include material-icon-size(0.9rem);
+}
+
+.phone-body{
+  grid-area: phone-body;
+  // border: 2px dashed cyan;
+  height: 38.5rem;
+}
+
+app-body{
+  position: absolute;
+  width: 97.2%;
+  left: 5px;
+  height: inherit;
+}
+

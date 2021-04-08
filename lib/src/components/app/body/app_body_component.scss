@@ -1,0 +1,17 @@
+@import 'package:angular_components/app_layout/mixins';
+
+.material-header{
+  background-color: blue;
+  margin: 0;
+}
+.material-header-row{
+  margin: 0;
+}
+.custom-width {
+    @include mat-drawer-width(30%);
+    @include mat-temporary-drawer-width(50%);
+  }
+
+  material-drawer{
+    border-bottom-left-radius: 5%;
+  }
