@@ -23,9 +23,10 @@ import 'src/components/app/body/app_body_component.dart';
 )
 class AppComponent implements OnInit {
   bool showBrowser;
-
+  var currentPlatform;
   @override
   void ngOnInit() {
+    currentPlatform = window.navigator.platform;
     if (platform.isDesktop && !platform.isIOS) {
       if (platform.isMacOS) {
         if (window.navigator.maxTouchPoints > 1) {

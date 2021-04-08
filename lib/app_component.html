@@ -5,6 +5,7 @@
         <div class="greetings-wrapper">
             <div class="main-container">
                 <h1>Hi, I'm Captain Soap</h1>
+                <p>{{currentPlatform}}</p>
             </div>
         </div>
     </section>
@@ -35,17 +36,17 @@
                 </div>
                 <div class="nav-bar">
                     <div class="nav-left-icons">
-                        <material-icon icon="arrow_back"></material-icon>
-                        <material-icon light icon="arrow_forward"></material-icon>
-                        <material-icon icon="refresh"></material-icon>
+                        <material-icon class="custom-browser-icon-size" icon="arrow_back"></material-icon>
+                        <material-icon class="custom-browser-icon-size" light icon="arrow_forward"></material-icon>
+                        <material-icon class="custom-browser-icon-size" icon="refresh"></material-icon>
                     </div>
                     <div class="nav-url-container">
                         <p>Lorem, ipsum dolor.</p>
                     </div>
                     <div class="nav-right-icons">
-                        <material-icon icon="extension"></material-icon>
-                        <material-icon icon="account_circle"></material-icon>
-                        <material-icon icon="settings"></material-icon>
+                        <material-icon class="custom-browser-icon-size" icon="extension"></material-icon>
+                        <material-icon class="custom-browser-icon-size" icon="account_circle"></material-icon>
+                        <material-icon class="custom-browser-icon-size" icon="settings"></material-icon>
                     </div>
                 </div>
                 <div class="browser-body">
@@ -55,17 +56,16 @@
         </section>
     </template>
     <template [ngIf]="!showBrowser">
-        <div class="main-container">
             <div class="phone-wrapper">
                 <div class="phone-frame">
                     <div class="phone-content">
                         <div class="notification-bar">
                             <div class="phone-punch-hole"></div>
                             <div class="notification-bar-icons">
-                                <material-icon class="custom-icon-size" icon="vibration"></material-icon>
-                                <material-icon class="custom-icon-size" icon="network_wifi"></material-icon>
-                                <material-icon class="custom-icon-size" icon="signal_cellular_4_bar"></material-icon>
-                                <material-icon class="custom-icon-size" icon="battery_charging_full"></material-icon>
+                                <material-icon class="custom-app-icon-size" icon="vibration"></material-icon>
+                                <material-icon class="custom-app-icon-size" icon="network_wifi"></material-icon>
+                                <material-icon class="custom-app-icon-size" icon="signal_cellular_4_bar"></material-icon>
+                                <material-icon class="custom-app-icon-size" icon="battery_charging_full"></material-icon>
                             </div>
                         </div>
                         <div class="phone-body">
@@ -74,6 +74,5 @@
                     </div>
                 </div>
             </div>
-        </div>
     </template>
 </body>

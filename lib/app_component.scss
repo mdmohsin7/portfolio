@@ -92,10 +92,7 @@ h6 {
   grid-area: scaffold;
   text-indent: 2px;
   min-width: 4rem;
-  /* height: 78%; */
-  /* background-color: rgb(146, 146, 146); */
   background-color: var(--mainColor);
-  /* border: 2px dashed brown; */
   display: flex;
   flex-direction: row;
   justify-content: space-between;
@@ -161,9 +158,13 @@ h6 {
     width: 85%;
     height: 100%;
   }
+  .phome-wrapper{
+    height: 70%;
+  }
 }
 
 .tab1, .tab2, .tab3, .tab4 {
+  cursor: pointer;
   background-color: rgb(163, 162, 162);
   border-top-left-radius: 0.5rem;
   border-top-right-radius: 0.5rem;
@@ -181,7 +182,7 @@ h6 {
   background-color: var(--mainColor);
 }
 
-#about, #project, #skills, #contact {
+#about, #projects, #skills, #contact {
   margin: 5px;
 }
 
@@ -207,12 +208,15 @@ h6 {
   -moz-box-shadow: -1px 1px 3px -1px rgba(0, 0, 0, 0.75);
   box-shadow: -1px 1px 3px -1px rgba(0, 0, 0, 0.75);
 }
+.custom-browser-icon-size {
+  @include material-icon-size(1.2em);
+}
 
 /* Phone Wrapper */
 .phone-wrapper{
-  margin: auto;
-  height: 41rem;
-  width: 90%;
+  width: fit-content;
+  margin: auto auto;
+  // height: 41rem;
   position: relative;
   background-color:whitesmoke;
 }
@@ -221,6 +225,7 @@ h6 {
   height: 40rem;
   border: 5px solid black;
   border-radius: 5%;
+  width: 20em;
 }
 
 .phone-content{
@@ -234,6 +239,7 @@ h6 {
   grid-area: notification-bar;
   // border: 2px dashed green;
   height: 1rem;
+  padding: 3px 4px;
   display: flex;
   flex-direction: row;
   justify-content: space-between;
@@ -248,7 +254,7 @@ h6 {
   background-color: black;
 }
 
-.custom-icon-size {
+.custom-app-icon-size {
   @include material-icon-size(0.9rem);
 }
 
@@ -256,12 +262,12 @@ h6 {
   grid-area: phone-body;
   // border: 2px dashed cyan;
   height: 38.5rem;
+  width: 20em;
 }
 
 app-body{
   position: absolute;
-  width: 97.2%;
-  left: 5px;
   height: inherit;
+  width: inherit;
 }
 
