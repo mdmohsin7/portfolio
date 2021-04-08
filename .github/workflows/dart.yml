@@ -22,10 +22,6 @@ jobs:
           sdk: 2.10.5
       - name: Install dependencies
         run: dart pub get
-      - name: Verify formatting
-        run: dart format --output=none --set-exit-if-changed .
-      - name: Install dependencies
-        run: dart pub get
       - name: activate webdev
         run: dart pub global activate webdev
       - name: upgrade dependencies
