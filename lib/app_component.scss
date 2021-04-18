@@ -12,6 +12,7 @@
 html, body {
   padding: 0;
   margin: 0;
+  scroll-behavior: smooth;
 }
 
 h1, h2, h3, h4, h5, h6, strong {
@@ -72,7 +73,8 @@ h6 {
 .s2 {
   background-color: var(--secondaryColor);
   border-bottom: 1px solid var(--borderColor);
-  overflow: auto;
+  display: flex;
+  justify-content: center;
 }
 
 .main-container {
@@ -85,7 +87,6 @@ h6 {
   text-align: center;
   align-content: center;
   min-height: 8rem;
-  border: 2px dashed red;
 }
 
 .scaffold {
@@ -140,17 +141,21 @@ h6 {
 }
 
 .browser-body {
+  display: grid;
   grid-area: body;
-  border: 2px dashed orange;
+  border: 2px dashed blue;
+  height: 33rem;
+  align-content: center;
 }
 
 .browser-wrapper {
+  width: 80%;
   display: grid;
   grid-template-columns: 1fr;
-  grid-template-rows: 2.6em 2.6em 24em;
+  grid-template-rows: 2.6em 2.6em 33em;
   /* gap: 6px; */
   grid-template-areas: "scaffold" "navigation" "body";
-  margin: 2% 10%;
+
 }
 
 @media screen and (max-width: 100%) and (height: 100%){
@@ -214,8 +219,11 @@ h6 {
 
 /* Phone Wrapper */
 .phone-wrapper{
+  display: flex;
+  justify-content: center;
   width: fit-content;
   margin: auto auto;
+  height: max-content;
   // height: 41rem;
   position: relative;
   background-color:whitesmoke;
@@ -231,7 +239,7 @@ h6 {
 .phone-content{
   display: grid;
   grid-template-columns: 1fr;
-  grid-template-rows: 1.5em 22em;
+  grid-template-rows: 1.5em;
   grid-template-areas: "notification-bar" "phone-body";
 }
 
@@ -261,7 +269,7 @@ h6 {
 .phone-body{
   grid-area: phone-body;
   // border: 2px dashed cyan;
-  height: 38.5rem;
+  height: 40rem;
   width: 20em;
 }
 

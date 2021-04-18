@@ -1,0 +1,17 @@
+.card{
+    width: 1fr;
+    margin: 10px;
+}
+.project-area{
+    border: 2px solid peachpuff;
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    overflow: auto;
+    justify-content: center;
+    height: 32em;
+    align-items: center;
+}
+.demo-card__title{
+font-size: 15px;
+}

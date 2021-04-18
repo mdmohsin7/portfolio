@@ -1,0 +1,65 @@
+
+.about-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    /* grid-template-rows: 20em;
+    grid-template-areas: "photo aboutText"; */
+    grid-column-gap: 6px;
+    grid-row-gap:6px;
+    grid-template-rows: max-content;
+    padding-top: 10px;
+    overflow: auto;
+}
+.about-photo {
+    height: inherit;
+    width: inherit;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+}
+
+.about-text {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    height: max-content;
+    padding: 50px;
+}
+
+.photo-container {
+    height: clamp(2rem, 10rem, 20rem);
+    width: clamp(2rem, 10rem, 20rem);
+    background-color: darkorchid;
+    box-shadow: 0px 0px 40px rgb(0 0 0 / 20%);
+}
+.about-me{
+    background-color:rgba(0,0,0,.05);
+    padding: 6px;
+    width: max-content;
+    height: max-content;
+}
+
+.cv-button{
+    border: 2px solid black;
+    background-color: black;
+    padding: 8px;
+    width: max-content;
+    height: max-content;
+}
+.cv-button a{
+    color: white;
+    padding: 8px;
+    width: max-content;
+    height: max-content;
+    text-decoration: none;
+}
+
+.cv-button:hover{
+    background-color: wheat;
+    transition: all .3s ease;
+}
+
+.about-paragraph{
+    padding-bottom: 8px;
+}

@@ -6,9 +6,9 @@
       </material-list-item>
       <material-list-item (trigger)="drawer.toggle()" [routerLink]="RoutePaths.skills.toUrl()">Skills
       </material-list-item>
-      <material-list-item>Projects
+      <material-list-item (trigger)="drawer.toggle()" [routerLink]="RoutePaths.projects.toUrl()">Projects
       </material-list-item>
-      <material-list-item>Contact
+      <material-list-item (trigger)="drawer.toggle()" [routerLink]="RoutePaths.contact.toUrl()">Contact
       </material-list-item>
     </div>
   </material-list>
@@ -24,7 +24,6 @@
     </div>
   </header>
   <div class="controls">
-    <h3>Options</h3>
     <router-outlet [routes]="Routes.all"></router-outlet>
   </div>
 </div>
