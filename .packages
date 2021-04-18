@@ -59,7 +59,6 @@ package_config:packages/package_config/
 package_resolver:packages/package_resolver/
 path:packages/path/
 pedantic:packages/pedantic/
-platform_info:packages/platform_info/
 pool:packages/pool/
 portfolio:packages/portfolio/
 protobuf:packages/protobuf/
