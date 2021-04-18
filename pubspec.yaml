@@ -10,7 +10,6 @@ dependencies:
   angular: ^6.0.0
   angular_components: ^1.0.2
   angular_router: ^2.0.0
-  platform_info: ^3.0.0
 
 dev_dependencies:
   sass_builder: ^2.1.3
