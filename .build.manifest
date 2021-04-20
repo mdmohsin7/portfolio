@@ -280,6 +280,8 @@ packages/pedantic/analysis_options.yaml
 packages/portfolio/assets/bloggie.jpg
 packages/portfolio/assets/eme.jpg
 packages/portfolio/assets/healthrific.jpg
+packages/portfolio/assets/papersy.jpg
+packages/portfolio/assets/portfolio.png
 packages/portfolio/assets/profile.png
 packages/test/dart.js
 packages/test/src/runner/browser/static/default.html.tpl
