@@ -14,13 +14,35 @@
 }
 ul{
     list-style-type: none;
-    padding: 6px;
+    padding: 8px;
+}
+a{
+    text-decoration: none;
+}
+.media{
+    height: 13em;
+    width: 16em;
 }
 .papersy-media{
-    height: 10em;
-    width: 16em;
-    background-image: url('');
+    background-image: url('packages/portfolio/assets/papersy.jpg');
+    background-size: 16em;
+}
+.healthrific-media{
+    background-image: url('packages/portfolio/assets/healthrific.jpg');
+    background-size: 17em;
+}
+.bloggie-media{
+    background-image: url('packages/portfolio/assets/bloggie.jpg');
+    background-size: 16em;
+}
+.eme-media{
+    background-image: url('packages/portfolio/assets/eme.jpg');
+    background-size: 17em;
+}
+.portfolio-media{
+    background-image: url('packages/portfolio/assets/portfolio.png');
+    background-size: 19em;
 }
 .project-title{
-    padding: 6px;
+    padding: 8px;
 }

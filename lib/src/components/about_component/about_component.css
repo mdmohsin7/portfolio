@@ -33,7 +33,7 @@
     background-color: darkorchid;
     background-image: url('packages/portfolio/assets/profile.png');
     background-size: 12rem;
-    box-shadow: 0px 0px 40px rgb(0 0 0 / 20%);
+    box-shadow: 0px 0px 40px rgb(0 0 0 / 25%);
 }
 .about-me{
     background-color:rgba(0,0,0,.05);
@@ -58,10 +58,12 @@
 }
 
 .cv-button:hover{
-    background-color: wheat;
+    background-color: white;
     transition: all .3s ease;
 }
-
+.cv-button a:hover{
+    color: black;
+}
 .about-paragraph{
     padding-bottom: 8px;
 }
