@@ -1,9 +1,9 @@
 .card{
     width: 1fr;
     margin: 10px;
+    padding: 6px 6px;
 }
 .project-area{
-    border: 2px solid peachpuff;
     display: flex;
     flex-direction: row;
     flex-wrap: wrap;
@@ -12,6 +12,15 @@
     height: 32em;
     align-items: center;
 }
-.demo-card__title{
-font-size: 15px;
+ul{
+    list-style-type: none;
+    padding: 6px;
+}
+.papersy-media{
+    height: 10em;
+    width: 16em;
+    background-image: url('');
+}
+.project-title{
+    padding: 6px;
 }

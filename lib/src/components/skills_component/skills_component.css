@@ -1,0 +1,44 @@
+.skills {
+    display: flex;
+    flex-direction: column;
+    overflow: auto;
+    height: 30em;
+    padding: 20px 20px;
+}
+
+.c, .cplusplus, .css3, .dart, .html5, .python, .angulardart, .flutter, .firebase, .windows, .cloud-firestore, .adobe-photoshop, .android-studio, .github, .vs-code {
+    display: flex;
+    flex-direction: row;
+
+}
+
+ul {
+    padding: 0;
+}
+li{
+    margin: 2px;
+    margin-right: 6px;
+}
+ul>li {
+    display: inline-block;
+    zoom: 1;
+    *display: inline;
+    /* this fix is needed for IE7- */
+}
+
+p {
+    margin: 0;
+}
+
+i {
+    width: 20px;
+    height: 20px;
+}
+
+.devicon-angularjs-plain.colored {
+    color: #00a8e1;
+}
+
+.devicon-visualstudio-plain.colored {
+    color: #0078d7;
+}

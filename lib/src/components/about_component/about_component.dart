@@ -8,5 +8,5 @@ import 'package:angular/angular.dart';
   providers: [],
 )
 class AboutComponent {
-  
+  String image = 'packages/portfolio/lib/assets/profile.png';
 }

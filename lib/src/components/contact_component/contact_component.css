@@ -1,0 +1,39 @@
+.contact-area{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 32em;
+}
+.devicon-linkedin-plain.colored, .devicon-github-original.colored{
+    font-size: 24px;
+    cursor: pointer;
+}
+a{
+    text-decoration: none;
+}
+.social-links{
+    margin: 12px 5px;
+}
+.contact-button{
+    border: 2px solid black;
+    background-color: black;
+    padding: 8px;
+    width: max-content;
+    height: max-content;
+}
+.contact-button a{
+    color: white;
+    padding: 8px;
+    width: max-content;
+    height: max-content;
+}
+
+.contact-button:hover{
+    background-color: white;
+    transition: all .3s ease;
+}
+
+.contact-button a:hover{
+    color: black;
+}

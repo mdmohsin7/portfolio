@@ -28,9 +28,11 @@
 }
 
 .photo-container {
-    height: clamp(2rem, 10rem, 20rem);
-    width: clamp(2rem, 10rem, 20rem);
+    height: clamp(2rem, 12rem, 20rem);
+    width: clamp(2rem, 12rem, 20rem);
     background-color: darkorchid;
+    background-image: url('packages/portfolio/assets/profile.png');
+    background-size: 12rem;
     box-shadow: 0px 0px 40px rgb(0 0 0 / 20%);
 }
 .about-me{
