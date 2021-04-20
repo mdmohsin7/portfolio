@@ -277,6 +277,10 @@ packages/pedantic/analysis_options.1.7.0.yaml
 packages/pedantic/analysis_options.1.8.0.yaml
 packages/pedantic/analysis_options.1.9.0.yaml
 packages/pedantic/analysis_options.yaml
+packages/portfolio/assets/bloggie.jpg
+packages/portfolio/assets/eme.jpg
+packages/portfolio/assets/healthrific.jpg
+packages/portfolio/assets/profile.png
 packages/test/dart.js
 packages/test/src/runner/browser/static/default.html.tpl
 packages/test/src/runner/browser/static/favicon.ico
