@@ -1,3 +1,5 @@
+import 'dart:html';
+
 import 'package:angular/angular.dart';
 import 'package:angular_components/angular_components.dart';
 import 'package:angular_components/material_button/material_button.dart';
@@ -14,4 +16,8 @@ import 'package:angular_components/material_icon/material_icon.dart';
     MaterialIconComponent,MaterialExpansionPanel],
   providers: [],
 )
-class ProjectsComponent {}
+class ProjectsComponent {
+  void openlink(String url){
+    window.open(url,'_blank');
+  }
+}
