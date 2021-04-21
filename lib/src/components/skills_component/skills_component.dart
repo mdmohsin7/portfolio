@@ -9,5 +9,4 @@ import 'package:angular_components/material_expansionpanel/material_expansionpan
   directives: [coreDirectives,MaterialExpansionPanel],
   providers: [overlayBindings],
 )
-class SkillsComponent {
-}
+class SkillsComponent{}

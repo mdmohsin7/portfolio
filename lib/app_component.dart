@@ -22,7 +22,6 @@ import 'src/components/app/body/app_body_component.dart';
 )
 class AppComponent implements OnInit {
   bool showBrowser = true;
-  var currentPlatform;
   @override
   void ngOnInit() {
     if (window.innerHeight > window.innerWidth) {
