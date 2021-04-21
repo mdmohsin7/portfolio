@@ -1,7 +1,9 @@
-# portfolio
+# Portfolio
 
-A web app that uses [AngularDart](https://angulardart.dev) and
+[![forthebadge](https://forthebadge.com/images/badges/built-with-love.svg)](https://forthebadge.com)
+[![forthebadge](https://forthebadge.com/images/badges/contains-tasty-spaghetti-code.svg)](https://forthebadge.com)
+
+A portfolio web app that uses [AngularDart](https://angulardart.dev) and
 [AngularDart Components](https://angulardart.dev/components).
 
-Created from templates made available by Stagehand under a BSD-style
-[license](https://github.com/dart-lang/stagehand/blob/master/LICENSE).
+The live version can be found [here](https://mdmohsin7.github.io/portfolio)
