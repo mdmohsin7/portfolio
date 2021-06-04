@@ -11826,7 +11826,7 @@ s.x2.w()},
 iL:function(a){this.a.toString
 C.p.be(window,"https://play.google.com/store/apps/details?id=com.thedumbcoders.papersy","_blank")},
 iN:function(a){this.a.toString
-C.p.be(window,"https://github.com/mdmohsin7/papersy","_blank")},
+C.p.be(window,"https://github.com/mdmohsin7/papersyV2","_blank")},
 iP:function(a){this.a.toString
 C.p.be(window,"https://github.com/mdmohsin7/healthrific","_blank")},
 iR:function(a){this.a.toString
