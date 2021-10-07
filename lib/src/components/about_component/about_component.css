@@ -28,8 +28,8 @@
 }
 
 .photo-container {
-    height: clamp(2rem, 12rem, 20rem);
-    width: clamp(2rem, 12rem, 20rem);
+    height: clamp(2rem, 10rem, 18rem);
+    width: clamp(2rem, 10rem, 18rem);
     background-color: darkorchid;
     background-image: url('packages/portfolio/assets/profile.png');
     background-size: 12rem;
