@@ -113,7 +113,7 @@ export const DATA = {
       start: "May 2023",
       end: "June 2024",
       description:
-        "Led product design and development, collaborating with CEO and COO. Implemented multi-layered caching strategies with Redis reducing response time from 9-12s to 2-3s. Managed development of both Flutter apps serving 500+ users. Migrated API service from Spring Boot to Go, reducing memory footprint from 400MB to 20MB.",
+        "Led product design and development, collaborating with CEO and COO. Implemented multi-layered caching strategies with Redis reducing response time from 9-12s to 2-3s. Managed development of both Flutter apps serving 5000+ users. Migrated API service from Spring Boot to Go, reducing memory footprint from 400MB to 20MB.",
     },
     {
       company: "RentOk (EazyPG)",
