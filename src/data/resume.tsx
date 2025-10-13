@@ -1,5 +1,5 @@
 import { Icons } from "@/components/icons";
-import { HomeIcon, NotebookIcon } from "lucide-react";
+import { HomeIcon, NotebookIcon, FileTextIcon } from "lucide-react";
 
 export const DATA = {
   name: "Mohsin Mohammed",
@@ -10,7 +10,7 @@ export const DATA = {
   description:
     "Founding Engineer at Omi AI. Flutter & Full Stack Developer passionate about AI, mobile development, and open source. Currently building the future of wearable AI.",
   summary:
-    "Currently working as a Founding Engineer at Omi AI in San Francisco, where I shape product vision and execute across backend, support, and product design. I have extensive experience in Flutter development, having worked with companies like Cattleguru, Skilcamp, and EazyPG. I'm passionate about AI integration, mobile development, and have contributed to open-source projects. I also created a Flutter course with 14,000+ students and maintain a 4.9/5 rating.",
+    "Currently working as a Founding Engineer at Omi AI, where I shape product vision and execute across backend, support, and product design. I have extensive experience in Flutter development, having worked with companies like Cattleguru, Skilcamp, and EazyPG. I'm passionate about AI integration, mobile development, and have contributed to open-source projects. I also created a Flutter course with 14,000+ students and maintain a 4.9/5 rating.",
   avatarUrl: "/me.webp",
   skills: [
     "Flutter",
@@ -36,6 +36,7 @@ export const DATA = {
   navbar: [
     { href: "/", icon: HomeIcon, label: "Home" },
     { href: "https://blog.mohsin.xyz", icon: NotebookIcon, label: "Blog" },
+    { href: "https://drive.google.com/file/d/1x6qlLVfa8Cv09lolzEB5d6RZGaCg1dkf/view", icon: FileTextIcon, label: "Resume" },
   ],
   contact: {
     email: "mohsin.lp710@gmail.com",
