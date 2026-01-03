@@ -1,5 +1,6 @@
 import { getAllPostSlugs, getHashnodePost } from "@/data/hashnode";
 import { DATA } from "@/data/resume";
+import { ShareButtons } from "@/components/share-buttons";
 import { formatDate } from "@/lib/utils";
 import { ArrowLeft } from "lucide-react";
 import type { Metadata } from "next";
@@ -117,6 +118,7 @@ export default async function Blog({
             {formatDate(post.publishedAt)}
           </p>
         </Suspense>
+        <ShareButtons url={`${DATA.url}/blog/${post.slug}`} title={post.title} />
       </div>
       <article
         className="prose dark:prose-invert"
