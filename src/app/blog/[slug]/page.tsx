@@ -1,13 +1,16 @@
-import { getBlogPosts, getPost } from "@/data/blog";
+import { getAllPostSlugs, getHashnodePost } from "@/data/hashnode";
 import { DATA } from "@/data/resume";
 import { formatDate } from "@/lib/utils";
+import { ArrowLeft } from "lucide-react";
 import type { Metadata } from "next";
+import Image from "next/image";
+import Link from "next/link";
 import { notFound } from "next/navigation";
 import { Suspense } from "react";
 
 export async function generateStaticParams() {
-  const posts = await getBlogPosts();
-  return posts.map((post) => ({ slug: post.slug }));
+  const slugs = await getAllPostSlugs();
+  return slugs.map((slug) => ({ slug }));
 }
 
 export async function generateMetadata({
@@ -17,15 +20,15 @@ export async function generateMetadata({
     slug: string;
   };
 }): Promise<Metadata | undefined> {
-  let post = await getPost(params.slug);
+  const post = await getHashnodePost(params.slug);
 
-  let {
-    title,
-    publishedAt: publishedTime,
-    summary: description,
-    image,
-  } = post.metadata;
-  let ogImage = image ? `${DATA.url}${image}` : `${DATA.url}/og?title=${title}`;
+  if (!post) {
+    return undefined;
+  }
+
+  const title = post.seo?.title || post.title;
+  const description = post.seo?.description || post.brief;
+  const ogImage = post.coverImage?.url || `${DATA.url}/og?title=${title}`;
 
   return {
     title,
@@ -34,7 +37,7 @@ export async function generateMetadata({
       title,
       description,
       type: "article",
-      publishedTime,
+      publishedTime: post.publishedAt,
       url: `${DATA.url}/blog/${post.slug}`,
       images: [
         {
@@ -58,7 +61,7 @@ export default async function Blog({
     slug: string;
   };
 }) {
-  let post = await getPost(params.slug);
+  const post = await getHashnodePost(params.slug);
 
   if (!post) {
     notFound();
@@ -73,13 +76,11 @@ export default async function Blog({
           __html: JSON.stringify({
             "@context": "https://schema.org",
             "@type": "BlogPosting",
-            headline: post.metadata.title,
-            datePublished: post.metadata.publishedAt,
-            dateModified: post.metadata.publishedAt,
-            description: post.metadata.summary,
-            image: post.metadata.image
-              ? `${DATA.url}${post.metadata.image}`
-              : `${DATA.url}/og?title=${post.metadata.title}`,
+            headline: post.title,
+            datePublished: post.publishedAt,
+            dateModified: post.publishedAt,
+            description: post.brief,
+            image: post.coverImage?.url || `${DATA.url}/og?title=${post.title}`,
             url: `${DATA.url}/blog/${post.slug}`,
             author: {
               "@type": "Person",
@@ -88,20 +89,40 @@ export default async function Blog({
           }),
         }}
       />
+      <Link
+        href="/blog"
+        className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors mb-6"
+      >
+        <ArrowLeft className="size-4" />
+        Back to all posts
+      </Link>
+      {post.coverImage?.url && (
+        <div className="mb-8 overflow-hidden rounded-lg">
+          <Image
+            src={post.coverImage.url}
+            alt={post.title}
+            width={1200}
+            height={630}
+            className="w-full h-auto object-cover"
+            priority
+          />
+        </div>
+      )}
       <h1 className="title font-medium text-2xl tracking-tighter max-w-[650px]">
-        {post.metadata.title}
+        {post.title}
       </h1>
       <div className="flex justify-between items-center mt-2 mb-8 text-sm max-w-[650px]">
         <Suspense fallback={<p className="h-5" />}>
           <p className="text-sm text-neutral-600 dark:text-neutral-400">
-            {formatDate(post.metadata.publishedAt)}
+            {formatDate(post.publishedAt)}
           </p>
         </Suspense>
       </div>
       <article
         className="prose dark:prose-invert"
-        dangerouslySetInnerHTML={{ __html: post.source }}
+        dangerouslySetInnerHTML={{ __html: post.content?.html || "" }}
       ></article>
     </section>
   );
 }
+

@@ -10,11 +10,11 @@ export const DATA = {
   description:
     "Founding Engineer at Omi AI. Flutter & Full Stack Developer passionate about AI, mobile development, and open source. Currently building the future of wearable AI.",
   summary:
-    "Currently working as a Founding Engineer at Omi AI, where I shape product vision and execute across backend, support, and product design. I have extensive experience in Flutter development, having worked with companies like Cattleguru, Skilcamp, and EazyPG. I'm passionate about AI integration, mobile development, and have contributed to open-source projects. I also created a Flutter course with 14,000+ students and maintain a 4.9/5 rating.",
+    "I'm a Founding Engineer at [Omi AI](https://omi.me), building the future of wearable AI. I've shipped products used by **100,000+ users**, architected systems that reduced response times by **75%**, and created a Flutter course with **14,000+ students** (4.9★ rating). I love reverse-engineering protocols, optimizing performance, and turning complex problems into elegant solutions. When I'm not coding, you'll find me writing about my engineering adventures on my blog.",
   avatarUrl: "/me.webp",
   skills: [
     "Flutter",
-    "Dart", 
+    "Dart",
     "Go",
     "Python",
     "Swift",
@@ -35,7 +35,7 @@ export const DATA = {
   ],
   navbar: [
     { href: "/", icon: HomeIcon, label: "Home" },
-    { href: "https://blog.mohsin.xyz", icon: NotebookIcon, label: "Blog" },
+    { href: "/blog", icon: NotebookIcon, label: "Blog" },
     { href: "https://drive.google.com/file/d/1x6qlLVfa8Cv09lolzEB5d6RZGaCg1dkf/view", icon: FileTextIcon, label: "Resume" },
   ],
   contact: {
