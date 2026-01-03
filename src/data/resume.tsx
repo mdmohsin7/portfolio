@@ -10,7 +10,7 @@ export const DATA = {
   description:
     "Founding Engineer at Omi AI. Flutter & Full Stack Developer passionate about AI, mobile development, and open source. Currently building the future of wearable AI.",
   summary:
-    "I'm a Founding Engineer at [Omi AI](https://omi.me), building the future of wearable AI. I've shipped products used by **100,000+ users**, architected systems that reduced response times by **75%**, and created a Flutter course with **14,000+ students** (4.9★ rating). I love reverse-engineering protocols, optimizing performance, and turning complex problems into elegant solutions. When I'm not coding, you'll find me writing about my engineering adventures on my blog.",
+    "I'm a Founding Engineer at [Omi AI](https://omi.me), building the future of wearable AI. I've shipped products used by **500,000+ users**, architected systems that reduced response times by **75%**, and created a Flutter course with **14,000+ students** (4.9★ rating). I love reverse-engineering protocols, optimizing performance, and turning complex problems into elegant solutions. When I'm not coding, you'll find me writing about my engineering adventures on my blog.",
   avatarUrl: "/me.webp",
   skills: [
     "Flutter",
@@ -36,7 +36,6 @@ export const DATA = {
   navbar: [
     { href: "/", icon: HomeIcon, label: "Home" },
     { href: "/blog", icon: NotebookIcon, label: "Blog" },
-    { href: "https://drive.google.com/file/d/1x6qlLVfa8Cv09lolzEB5d6RZGaCg1dkf/view", icon: FileTextIcon, label: "Resume" },
   ],
   contact: {
     email: "mohsin.lp710@gmail.com",
@@ -90,7 +89,7 @@ export const DATA = {
       start: "Jun 2024",
       end: "Present",
       description:
-        "Shaped product vision and executed across backend, support, and product design. Refactored entire codebase using Provider for better maintainability. Designed and developed App Store infrastructure powering 1M+ app uses and hosting 4,000+ apps. Developed native macOS audio pipeline and Omi Apple Watch app. Implemented improvements to STT, WAL, search, and AI persona features.",
+        "Building the future of wearable AI as one of the first engineers. Built the macOS app with a custom audio pipeline that records conversations without virtual audio drivers. Integrated third-party wearables enabling anyone with any device to use Omi. Architected the App Store infrastructure powering 1M+ app uses with 4,000+ third-party apps. And much more.",
     },
     {
       company: "Google Summer of Code (AOSSIE)",
@@ -102,7 +101,7 @@ export const DATA = {
       start: "Jun 2024",
       end: "Aug 2024",
       description:
-        "Developed Desktop and Web version of an AR integrated Social Media Platform. Utilized BLoC for State Management with Domain Driven Design Approach. Made the UI responsive to work on devices with all types of resolutions.",
+        "Selected from 43,000+ applicants worldwide to build an AR-integrated social platform. Shipped Desktop and Web versions using BLoC with Domain-Driven Design. Built a fully responsive UI that scales from mobile to 4K displays.",
     },
     {
       company: "Cattleguru",
@@ -114,7 +113,7 @@ export const DATA = {
       start: "May 2023",
       end: "June 2024",
       description:
-        "Led product design and development, collaborating with CEO and COO. Implemented multi-layered caching strategies with Redis reducing response time from 9-12s to 2-3s. Managed development of both Flutter apps serving 5000+ users. Migrated API service from Spring Boot to Go, reducing memory footprint from 400MB to 20MB.",
+        "Led product development directly with the founding team. Cut API response times by 75% (from 12s to 3s) with Redis caching. Migrated backend from Spring Boot to Go, slashing memory usage from 400MB to 20MB. Owned both Flutter apps serving 5,000+ daily users.",
     },
     {
       company: "RentOk (EazyPG)",
@@ -126,7 +125,7 @@ export const DATA = {
       start: "Feb 2022",
       end: "Aug 2022",
       description:
-        "Led migration of consumer app from native to Flutter using MVP architecture, resulting in 90% performance improvement on iOS. Revamped UI for version 2.0 used by 100,000+ users. Expanded payment capabilities and integrated Firebase services",
+        "Rebuilt the consumer app from native to Flutter, achieving 90% faster iOS performance. Designed and shipped v2.0 UI serving 100,000+ users. Integrated payment systems and Firebase services that became core infrastructure.",
     },
   ],
   education: [
