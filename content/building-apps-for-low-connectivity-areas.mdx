@@ -1,0 +1,52 @@
+---
+title: "Building Scalable Apps for Low Connectivity Areas"
+publishedAt: "2024-06-14"
+summary: "Introduction\nThe majority of Cattleguru's audience resides in villages and rural areas in Northern India. While all major cities already have 5G and many tier 2 cities are on 4G, rural areas still lag behind. Creating an e-commerce app for these regi..."
+image: "/blog/building-apps-for-low-connectivity-areas/1cc95c52-74dd-4cf9-bb20-ca25c02d8396.webp"
+---
+
+## Introduction
+
+The majority of Cattleguru's audience resides in villages and rural areas in Northern India. While all major cities already have 5G and many tier 2 cities are on 4G, rural areas still lag behind. Creating an e-commerce app for these regions is quite challenging due to limited connectivity. Additionally, people often avoid updating the app because of limited internet data. This makes it difficult to make online-only apps. Furthermore, the loading time for fetching data from the backend and displaying it in the app can be significant, sometimes causing users to wait for more than 10-15 seconds to perform any operation.
+
+## Background
+
+We needed a solution to:
+
+-   Reduce latency for all sorts of operations originating from our Apps
+    
+-   Keep App Data in Sync with Remote Database
+    
+
+Initially, we didn't use any specific solution; the app simply fetched data from Firestore and displayed it. Given that Firestore caches data locally, we didn't consider alternatives until we observed real-world app usage. We noticed that users weren't using the app frequently; instead, they placed orders through our salesmen. This was because most of the time, they saw the app taking anywhere between 20-30 seconds to successfully place an order. Hence, they found it easier to just call the salesmen and place the order. As we expanded into more remote villages, our delivery partners couldn't effectively use the internal team app to deliver orders due to low connectivity in those remote villages. Therefore, we needed a more robust and efficient solution to improve operations.
+
+## Approaches
+
+There are various approaches we could have taken to resolve our issues. One approach was using CRDTs (Conflict-Free Replicated Data Type). This would have made sense if our apps were write-heavy and collaborative. While we considered it initially, we discarded it because our apps are mostly read-heavy, and only the internal team app is somewhat write-heavy. You might wonder why we didn't use CRDTs for the team app since it is write-heavy. Although it is both read and write-heavy, there are other approaches with less overhead compared to CRDTs, which make more sense because we wouldn't fully utilize CRDTs even if we implemented them.
+
+Another approach was to make our apps offline-first with sync services like [Electric SQL](https://electric-sql.com/) or [PowerSync](https://www.powersync.com/). However, the problem here is that we don't use Postgres (yet), so migrating from Firestore to PostgreSQL would be a time taking task. Additionally, Electric SQL is not yet stable and has many limitations at present, while PowerSync isn't open source yet.
+
+Another approach is to cache whatever we can and move all the time-consuming operations to the cloud (backend). We chose this approach. After quite some research, we decided to follow a three-layered caching strategy coupled with feature flags and message queues for our systems.
+
+## The Chosen Approach
+
+If you want to reduce the latency of fetching frequently accessed and infrequently changed data, caching is one of the best solutions with very little overhead. That's exactly what we did by adding caching at various levels. We have a client-side database, an in-memory (non-persistent) database at the server level, and an adjacent Redis instance. A call is made to Firestore only if the data does not exist at the previous three levels.
+
+Our SKUs don't change frequently, and if there is a change, it's mostly in the price. So, it made sense for us to cache the product data on the client side for the long term. Whenever the app opens, it makes one API call to fetch the last cache update time and feature flags update time and compares it locally. To minimize the amount of data sent to the client, we only return the cache keys and feature flag keys that have changed. This might not seem like much, but it helps save a few bytes of data.
+
+When it comes to our internal team app, the order data changes every time a new order is received. Sometimes we don't receive orders for hours. Therefore, it doesn't make sense to have a fixed expiry for the cache while updating it at specific intervals, especially since we don't receive orders between 1 AM and 6 AM at all. Instead, we decided to use a cache with no expiry. Rather than updating both the in-memory cache and Redis with every new order, we opted to use Cron Jobs to update them at regular intervals. The Cron Jobs are scheduled to run only during the working hours of our teams. For those curious, we use [Upstash](https://upstash.com/) Redis and QStash for this purpose.
+
+![](/blog/building-apps-for-low-connectivity-areas/8b258f1c-a1c9-4425-8277-41734720f80d.webp)
+
+To minimize the amount of data written by every write operation of the team app, we redesigned the feature flows to reduce as much data as possible while ensuring enough data is captured. Since we already know who our delivery partners are and the customers who placed the orders, we eliminated all unnecessary fields being transferred to the backend, using only one field as a strong identifier of the user.
+
+One very common problem with having caches at multiple levels is keeping all of them in sync with the main database. This is a big issue if the data changes frequently. But given the data that is cached locally on the client side doesn't change that frequently, it isn't that big of an issue for us. We use flags to keep track of what data was changed and when it changed. It helps us in keeping the data between the client and the backend in sync.
+
+The table below shows how much the response time has improved, thanks to the approaches we implemented.
+
+| Metric | Response Time Now (ms) | Response Time Before (ms) |
+| --- | --- | --- |
+| MAX | 5000 | 30000 |
+| 99TH PERC | 4975 | 29600 |
+| 90TH PERC | 4750 | 26000 |
+| 50TH PERC | 3750 | 5000 |

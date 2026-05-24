@@ -1,0 +1,193 @@
+---
+title: "The Pendant That Refused to Die"
+publishedAt: "2025-12-22"
+summary: "I paid 300 dollars for a paperweight.\nWell, not intentionally.\nA few days before the Meta acquisition announcement, I ordered a Limitless Pendant. Payment processed. Shipping confirmed. Then, before it ever arrived, everything changed. The company an..."
+image: "/blog/the-pendant-that-refused-to-die/77d5b73f-25e7-498f-b099-585323af6e30.webp"
+---
+
+I paid 300 dollars for a paperweight.
+
+Well, not intentionally.
+
+A few days before the Meta acquisition announcement, I ordered a Limitless Pendant. Payment processed. Shipping confirmed. Then, before it ever arrived, everything changed. The company announced geoblocking in multiple countries, major compliance changes, a halt on hardware sales, and a shutdown timeline for the app.
+
+My pendant was still somewhere over the Atlantic, already obsolete.
+
+For most people, that would have been the end of the story. Eat the cost. Move on. Maybe write an angry tweet.
+
+But I work at Omi. We had been adding support for every major wearable audio device on the market. Limitless was the last holdout. Overnight, thousands of users in geoblocked countries were searching for alternatives. Many did not want their voice data feeding a new ecosystem. Many already owned hardware they trusted and did not want to throw away.
+
+If I could crack the protocol, those users would get a new home. And my not yet arrived paperweight would get a second life.
+
+There was just one problem.
+
+I did not have the device.
+
+## Working Blind
+
+What I did have was a friend in London.
+
+He owned a Limitless Pendant, still had full access to the official app, and happened to be on a business trip. When this all started, he was in the back of an Uber, on the way to the airport, heading back to the United States.
+
+When I asked if he could run a few scripts, he did not hesitate. He opened his laptop in the car.
+
+Over the next 24 hours, he became my Bluetooth lab, my QA team, and my reality check. Everything I learned came through him. I would write scripts, send them over, he would run them, and I would stare at logs trying to reconstruct what was happening five thousand miles away.
+
+I had reverse engineered enough BLE audio devices to know where to start. I wrote a small Python script using `bleak` to scan everything the pendant advertised: services, characteristics, properties. He ran it from the Uber.
+
+The logs came back clean.
+
+```text
+Service: 632de001-604c-446b-a80f-7963e950f3fb
+  Characteristic: 632de002-604c-446b-a80f-7963e950f3fb
+    Properties: ['write', 'write-without-response']
+  Characteristic: 632de003-604c-446b-a80f-7963e950f3fb
+    Properties: ['notify']
+```
+
+Three sequential UUIDs. Classic BLE architecture. `...02` for sending commands to the device. `...03` for receiving data back. Nothing exotic. This was workable.
+
+I wrote another script to connect and capture every packet the pendant emitted. Between traffic lights, airport Wi-Fi, and boarding announcements, he kept running commands. After a lot of back and forth, reconnects, Bluetooth restarts, and button presses, we got stable connections.
+
+But no audio.
+
+The pendant just sat there. LED dark. Completely silent.
+
+## The Missing Piece
+
+I tried everything. Different command sequences. Different timing. Different connection orders. Nothing worked.
+
+So I stopped trying to talk to the pendant and started listening to what the official app was saying to it.
+
+I walked my friend through enabling developer options on his Android phone. He used the pendant normally while capturing HCI logs, the raw Bluetooth traffic between phone and device. He did this several times, restarting between runs.
+
+By then, he was at the airport.
+
+By the time his flight boarded, I had a stack of packet captures in my inbox.
+
+I loaded them into Wireshark and compared sessions side by side. Hex dumps blur together after a while. Then something stood out.
+
+![](/blog/the-pendant-that-refused-to-die/ad1c42fc-427d-4e20-bd23-e23e4ee04f62.webp)
+
+One packet appeared in every capture. Same structure. Same position in the handshake. Every time.
+
+```plaintext
+32 07 08 c1 97 c6 c2 af 33
+```
+
+I did not immediately recognize the format. I dumped a batch of packets into Claude and asked what it could identify.
+
+Those look like protobuf field tags.
+
+Of course.
+
+I decoded it by hand.
+
+-   `32` means field 6, length delimited
+    
+-   `07` means seven bytes follow
+    
+-   `08` means nested field 1, varint
+    
+-   `c1 97 c6 c2 af 33` is a varint encoded value
+    
+
+The decoded value was **1765102684161**.
+
+A Unix timestamp in milliseconds. December 7, 2025.
+
+The app was telling the pendant what time it was.
+
+That was the missing piece.
+
+The pendant timestamps all audio internally. Without knowing the current time, it literally cannot record. It was not broken. It was not locked down. It was waiting.
+
+I wrote the encoder in about thirty seconds.
+
+```python
+def encode_set_current_time(timestamp_ms: int) -> bytes:
+    time_varint = bytes([0x08]) + encode_varint(timestamp_ms)
+    return bytes([0x32, len(time_varint)]) + time_varint
+```
+
+I sent the updated script.
+
+By then, he was taxiing for takeoff.
+
+He ran it again after reconnecting.
+
+Then he pressed the button.
+
+The LED turned on.
+
+For the first time, without the official app, the device was recording.
+
+## Cracking the Stream
+
+Recording and getting usable audio are different problems.
+
+Packets were flowing now, even as his plane climbed out of London. The data looked like noise. I needed to identify the codec.
+
+I made the obvious guess first. Opus at 16 kHz. Almost everyone uses it for voice.
+
+Sure enough, certain bytes repeated at consistent offsets: `0xb8`, `0x78`, `0xf8`.
+
+I pulled up RFC 6716, the Opus specification. These were TOC bytes. Table of Contents. They encode frame configuration, mono or stereo, and frame count. `0xb8` decodes to config 23, mono, single frame. Exactly what you would expect from a wearable microphone.
+
+![](/blog/the-pendant-that-refused-to-die/8231ddab-1671-482b-b6a7-d13db0919cb5.webp)
+
+The pendant was encoding 20 ms Opus frames and wrapping each one in a protobuf message.
+
+I extracted a few dozen frames, stitched them together, wrote them to an Ogg file, and hit play.
+
+My friend’s voice came through the speakers.
+
+![](/blog/the-pendant-that-refused-to-die/6deffe68-285b-4db9-9844-418adba2773a.webp)
+
+Spectrogram of the first successful extraction. That's speech.
+
+A little crackly at the transitions, but unmistakably real. Recorded on a device I had never touched, using a protocol I had learned existed only hours earlier.
+
+## Ship It
+
+For anyone keeping score, the full stack looked like this.
+
+```text
+┌─────────────────────────────────────────────┐
+│ Application Layer (Opus audio frames)       │
+├─────────────────────────────────────────────┤
+│ Message Layer (Protobuf fields)             │
+├─────────────────────────────────────────────┤
+│ Fragment Layer (sequence and count)         │
+├─────────────────────────────────────────────┤
+│ BLE GATT (TX: ...02 / RX: ...03)            │
+└─────────────────────────────────────────────┘
+```
+
+Once the Python proof of concept worked, I ported everything to Dart for our Flutter app. I pushed a build to TestFlight and sent it to a handful of Limitless users who had reached out.
+
+It works.
+
+My recordings show up.
+
+I can export them.
+
+It is real.
+
+By the time my collaborator landed in the United States, the protocol was cracked.
+
+We pushed it live to the App Store the next day.
+
+![](/blog/the-pendant-that-refused-to-die/bc84a9c3-9a5b-42a0-a7e4-bb4d17a5a9c0.webp)
+
+Omi traffic after Limitless support went live.
+
+No encryption was bypassed. No proprietary code was decompiled. The protocol uses standard BLE, standard Protobuf, and standard Opus. All open specifications.
+
+This was pattern recognition, persistence, and one very patient collaborator with a device I could not touch.
+
+My pendant finally arrived three days later.
+
+By then, it already worked with Omi.
+
+Screenshots and code samples have been simplified for clarity. The actual implementation is in [the PR.](https://github.com/BasedHardware/omi/pull/3641)
