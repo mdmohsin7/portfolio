@@ -1,0 +1,136 @@
+---
+title: "Setting Up Core Lightning Node on an Ampere VM (OCI): A Comprehensive Guide"
+publishedAt: "2024-02-10"
+summary: "How to run a Core Lightning node on a free ARM VM without downloading the full Bitcoin blockchain."
+image: "/blog/setting-up-core-lightning-node-on-an-ampere-vm/4de46860-ce3a-431f-928a-11ac30d2e9e2.webp"
+---
+
+Core Lightning (previously c-lightning) is a lightweight, highly customizable, and standard-compliant implementation of the Lightning Network protocol. While the project offers extensive documentation, there is a scarcity of articles guiding beginners through the setup process. In this tutorial, I will outline the steps to successfully run a Core Lightning Node on an Ampere (Arm-based) VM with 8GB RAM and 4 OCPUs. This guide is tailored for developers aiming to set up a Lightning Node for development purposes.
+
+**Note:** You will have to be on the "Pay as you go" plan of Oracle Cloud Infrastructure (OCI) for you to be able to create an Ampere VM (with upto 24GB RAM and 4OCPUs for free).
+
+### **VM Setup**
+
+Spin up an Ampere VM with at least 4GB of RAM (I opted for 8GB) through OCI's instance creation UI. Make sure to select Ubuntu 20.04 or later as the base image.
+
+![OCI Instance Creation](https://dev-to-uploads.s3.amazonaws.com/uploads/articles/3y9foarht2n0r89v2m34.png)
+
+**Important:** Make sure you download the private as well as the public keys (you won't be able to SSH into the VM later on if you don't have the private key).
+
+The newly created instance should be up and running in a minute or two.
+
+### **SSH into VM**
+
+Open a new terminal on your local machine and change the permissions for the private key by running the following command:
+
+```bash
+chmod 400 /path/to/key/key_name.key
+```
+
+After changing the permissions, SSH into the VM by running the following command:
+
+```bash
+ssh username@<vm-ip-address> -i /path/to/key/key_name.key
+```
+
+You can find the username and public IP of your VM in the VM Instance details page on OCI.
+
+![OCI VM Instance Details](https://dev-to-uploads.s3.amazonaws.com/uploads/articles/cgasea37g82osyk3u09q.png)
+
+### **Installing Core Lightning (Approaches)**
+
+There are three ways to install Core Lightning
+
+1.  Installing pre-compiled binaries
+    
+2.  Using Docker
+    
+3.  Building Binaries from source
+    
+
+Since we are on an Arm based VM, we won't be able to follow the first approach because Core Lightning only provides pre-compiled binaries for AMD-based Fedora and Ubuntu distributions, which can be found [here](https://github.com/ElementsProject/lightning/releases).
+
+We will be following the third approach, which involves compiling the binary from source.
+
+### **Installing Dependencies**
+
+The following commands will download all the required dependencies:
+
+```basic
+sudo apt-get update
+sudo apt-get install -y \
+  autoconf automake build-essential git libtool libsqlite3-dev \
+  python3 python3-pip net-tools zlib1g-dev libsodium-dev gettext
+pip3 install --upgrade pip
+pip3 install --user poetry
+```
+
+### **Installing Bitcoin**
+
+We will not be running our own Bitcoin Core node due to storage constraints (it requires around 400GB of storage). Instead, we will install it minimally:
+
+```bash
+sudo apt-get install snapd
+sudo snap install bitcoin-core
+# Snap does some weird things with binary names; you'll
+# want to add a link to them so everything works as expected
+sudo ln -s /snap/bitcoin-core/current/bin/bitcoin{d,-cli} /usr/local/bin/
+```
+
+### **Setting up Core Lightning**
+
+The process isn't really different from what is in the documentation. So I have copied and pasted the required commands to be followed.
+
+```bash
+git clone https://github.com/ElementsProject/lightning.git
+cd lightning
+git checkout v23.11.2
+sudo apt-get install -y valgrind libpq-dev shellcheck cppcheck \
+  libsecp256k1-dev jq lowdown
+```
+
+### **Building Core Lightning**
+
+```bash
+pip3 install --upgrade pip
+pip3 install mako
+pip3 install -r plugins/clnrest/requirements.txt
+pip3 install grpcio-tools
+./configure
+make
+sudo make install
+```
+
+By this point, you should have the lightning and Bitcoin binaries set up correctly. If you attempt to run the command `lightningd`, you'll probably get some error stating that there's no Bitcoin node running. To fix this, we have to connect to a Bitcoin node. For this, we can either run our own Bitcoin node (which we already have installed) or use a third-party plugin. Since running our own node requires an upwards of around 400GB of storage, we will use a third-party plugin.
+
+There are various plugins; for this tutorial, we will go with [sauron](https://github.com/lightningd/plugins/tree/master/sauron). You can check the rest of the plugins [here](https://docs.corelightning.org/docs/bitcoin-core#connecting-to-bitcoin-core-remotely).
+
+### **Setting Up Sauron**
+
+Core Lightning supports a plugin manager called `reckless`, which simplifies the installation and uninstallation of plugins with a single command. To install Sauron, execute the following command:
+
+```bash
+reckless install sauron
+```
+
+After running the above command, the sauron plugin will be downloaded in the `~/.lightning/reckless/sauron` directory.
+
+> Reckless currently supports python plugins only
+
+### **Running Core Lightning Node**
+
+To run the node on the testnet, execute the following command:
+
+```bash
+lightningd --testnet --disable-plugin bcli --plugin --plugin ~/.lightning/reckless/sauron/sauron.py --sauron-api-endpoint https://blockstream.info/testnet/api/
+```
+
+Congratulations! You now have a successfully running Lightning node with a third-party plugin acting as a Bitcoin node. You can interact with your node using `lightning-cli`.
+
+Open a new terminal, SSH into the VM again, and run the following command to confirm whether you are able to interact with your node or not:
+
+```bash
+lightning-cli --testnet getinfo
+```
+
+You can check the various commands provided by `lightning-cli`[here](https://docs.corelightning.org/reference/get_list_methods_resource#:~:text=JSON%2DRPC%20API%20REFERENCE).
