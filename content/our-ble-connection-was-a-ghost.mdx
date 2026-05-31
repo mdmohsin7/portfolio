@@ -1,0 +1,300 @@
+---
+title: "Our BLE Connection Was a Ghost. I Rebuilt It From Scratch."
+publishedAt: "2026-06-01"
+summary: "How we rebuilt Omi's Bluetooth stack natively, killed off ghost connections, and stopped polling the radio every 15 seconds."
+image: "/blog/our-ble-connection-was-a-ghost/cover.webp"
+---
+
+For months, the same support ticket kept landing in our queue.
+
+> "My Omi shows connected but nothing's happening."
+
+The app said connected. The device thought it was connected. But audio wasn't streaming.
+
+We called these ghost connections. They're the kind of bug that quietly destroys a hardware product. Intermittent, hard to reproduce, masked by working most of the time.
+
+[Omi](https://omi.me) is a wearable that streams audio over Bluetooth Low Energy (BLE) to a Flutter app for real-time transcription. If the connection drops, you lose a sentence. If it ghost-connects, you lose an entire conversation and the user doesn't notice until they check the app later.
+
+Over the months our team chased these, the workarounds in our Flutter BLE stack accumulated. We added retry logic. Timers. Guard rails. Debouncers and mutexes. The workarounds bought us time. None of them was going to make ghost connections actually go away, because the library we'd built on was generic by design and our use case had outgrown what generic could do.
+
+This is the story of the rewrite. I tore out our Bluetooth transport, plugged a new native implementation into a pattern we already had, and let the OS do what it was designed to do.
+
+![Crashes by day, before and after we shipped the Native BLE Transporter](/blog/our-ble-connection-was-a-ghost/crash-trend.webp)
+*Crashes by day, before and after we shipped the Native BLE Transporter. We'll get to how this happened.*
+
+---
+
+## How we got here: workarounds for a use case that had outgrown its library
+
+We started with [flutter_blue_plus](https://pub.dev/packages/flutter_blue_plus), a popular Flutter BLE plugin. It worked fine for the basics: scan, connect, read, write, subscribe. Nothing wrong with the plugin itself. The problems came from everything we built around it as the use case became more specific.
+
+### The 15-second timer
+
+When a device disconnects, you need to reconnect. flutter_blue_plus does reconnection, but it doesn't expose enough control over how it happens for an always-on streaming use case — so we'd added a `Timer.periodic` that fires every 15 seconds:
+
+```dart
+_reconnectionTimer = Timer.periodic(
+  Duration(seconds: 15),
+  (t) async {
+    if (!isConnected && connectedDevice == null) {
+      await scanAndConnectToDevice();
+    }
+  },
+);
+```
+
+Every 15 seconds the app did a full BLE scan. Radio on, scanning for peripherals, checking if our device was around. Even when the user's phone was in their pocket and the device was sitting on their wrist, perfectly in range.
+
+### Three ways to reconnect
+
+`scanAndConnectToDevice()` had become a choose-your-own-adventure:
+
+```dart
+Future<BtDevice?> _scanConnectDevice() async {
+  // Path 1: Maybe we're already connected and don't know it?
+  var device = await _getConnectedDevice();
+  if (device != null) return device;
+
+  // Path 2: Force reconnect through the service layer
+  await ServiceManager.instance().device.ensureConnection(id, force: true);
+  await Future.delayed(const Duration(seconds: 2)); // hope this is enough
+  device = await _getConnectedDevice();
+  if (device != null) return device;
+
+  // Path 3: Full discovery scan
+  await ServiceManager.instance().device.discover(desirableDeviceId: id);
+  await Future.delayed(const Duration(seconds: 2)); // hope again
+  return connectedDevice;
+}
+```
+
+Three paths. Two hardcoded 2-second sleeps. A `_getConnectedDevice()` check that queried the plugin directly because we didn't trust our own state.
+
+### Four versions of the truth
+
+Connection state lived in four places at the same time:
+
+- `DeviceProvider.isConnected` — the UI layer's opinion
+- `DeviceConnection._connectionState` — the service layer's opinion
+- `BleTransport._state` — the transport layer's opinion
+- `BluetoothDevice.isConnected` — flutter_blue_plus's opinion
+
+They could (and did) disagree. When the timer fired, it would check `isConnected` at the provider level, which might say "no" while the transport layer was mid-reconnect. So it would start a second connection attempt. Now you have two GATT connections to the same device — one real, one zombie. (GATT is the protocol your app uses to talk to a BLE device. You can think of it as "the open channel.")
+
+Because the state was unreliable, we added debouncers — a 500ms delay before we believe a disconnect, 100ms before we believe a connect.
+
+### A foreground service hack
+
+On Android, the app needs to stay alive in the background to maintain the BLE connection. We were using a location foreground service (service type `connectedDevice|location`) to keep the process alive. This was a blunt instrument: we were telling Android "I need connected device access AND location" when really we just needed BLE not to die.
+
+By the time it was clear this had hit its ceiling, we had no OS-level reconnection — only a stack of Dart-side patches around a library doing what it was designed to do.
+
+---
+
+## What the OS gives you for free
+
+Here's what made native the right call: both iOS and Android already give you everything you need to handle long-lived device connections properly. The primitives exist, they're well-designed for this case, and they run at the chipset level so they cost almost nothing. They just live below the layer where a cross-platform library can reach.
+
+### iOS — CoreBluetooth
+
+- `centralManager.connect(peripheral)` with no timeout is a *passive chipset-level scan*. Zero CPU, zero radio cost. The BLE controller hardware watches for the device's advertisement and connects when it sees it. You don't poll. You don't scan. You say "connect to this when you see it" and the chip does the rest.
+- State restoration (`willRestoreState`) means if iOS kills your app for memory, it remembers your pending connections. When the device appears, iOS relaunches your app and hands you back the connected peripheral. You wake up already connected.
+
+### Android — CompanionDeviceManager + autoConnect
+
+- `connectGatt(autoConnect=true)` tells the Android BLE controller to passively scan for the device. Like iOS, this happens in hardware with no CPU cost.
+- `CompanionDeviceManager` lets you register a device as a companion. The OS fires `onDeviceAppeared` / `onDeviceDisappeared` callbacks without you scanning. It survives app death. It survives reboots.
+- A foreground service with `FOREGROUND_SERVICE_TYPE_CONNECTED_DEVICE` gives you proper OS-level lifecycle management instead of the location hack.
+
+None of this is exposed by a Dart BLE plugin, and that isn't really anyone's fault. Every app using BLE has different needs — transactional reads, long-lived streaming, scanning beacons, scanning for ranges of devices — and a single cross-platform library can't surface every platform-specific primitive for every shape of use case. At a certain level of specificity, you're on your own with the platform.
+
+---
+
+## The seam that made the rewrite possible
+
+Before this rewrite, the BLE stack was already split into three layers: **Discoverer → Connector → Transporter**.
+
+- **Discoverer** finds devices.
+- **Connector** owns the business logic for a specific device.
+- **Transporter** moves bytes over whatever protocol — BLE, WiFi, USB, classic Bluetooth.
+
+```
+App → Discoverer → Connector → Transporter → Device
+```
+
+I'd drawn that split for a different problem: supporting multiple wearable devices without rewriting the app each time. But because business logic and transport were already separated, the BLE rewrite was contained to one layer. The new **Native BLE Transporter** — Swift and Kotlin owning the connection lifecycle — slotted in behind the same interface as the old Dart one. The Connector didn't know it had changed.
+
+Without that seam, this rewrite would have cascaded through every layer of the app.
+
+---
+
+## The Native BLE Transporter
+
+The core design decision was simple: **native owns the connection lifecycle. Dart just reacts to events.**
+
+I used [Pigeon](https://pub.dev/packages/pigeon) (Flutter's code-gen tool for type-safe platform channels) to define the contract:
+
+```dart
+// Dart tells native what to do (commands)
+@HostApi()
+abstract class BleHostApi {
+  void manageDevice(String uuid, bool requiresBond);  // "own this device"
+  void unmanageDevice(String uuid);                    // "stop owning it"
+  void startScan();
+  void stopScan();
+  // ...GATT operations (read, write, subscribe)
+}
+
+// Native tells Dart what happened (events)
+@FlutterApi()
+abstract class BleFlutterApi {
+  void onDeviceReady(String uuid, List<BleService> services);  // "connected, here are the services"
+  void onPeripheralDisconnected(String uuid, String? error);   // "lost it"
+  void onCharacteristicValueUpdated(...);                       // "got data"
+}
+```
+
+That's the entire boundary between Connector and Transporter. Dart sends intent, native fires events back. All the polling, scanning, and timer work we'd accumulated on the Dart side is gone — none of it has to exist once the OS itself is the thing managing connection state.
+
+### Connecting: one call, then wait
+
+The Dart side became trivially simple:
+
+```dart
+Future<void> connect() async {
+  _deviceReadyCompleter = Completer<List<BleService>>();
+  _hostApi.manageDevice(_peripheralUuid, requiresBond);
+  _services = await _deviceReadyCompleter!.future.timeout(Duration(seconds: 60));
+}
+```
+
+A single Pigeon call kicks off the whole sequence. Native walks through connect, service discovery, MTU negotiation, and bonding if needed, then fires `onDeviceReady` once everything is in place.
+
+### Reconnecting: native handles it
+
+When the device disconnects, native doesn't tell Dart "figure it out." It tells Dart "I lost the device, I'm working on it."
+
+On iOS:
+
+```swift
+func centralManager(_ central: CBCentralManager,
+                    didDisconnectPeripheral peripheral: CBPeripheral,
+                    error: Error?) {
+    if !manualDisconnect {
+        centralManager.connect(peripheral)  // chipset-level passive reconnect
+    }
+}
+```
+
+On Android, the foreground service schedules a retry:
+
+```kotlin
+private fun handleRetryLogic(deviceId: String) {
+    handler.postDelayed({
+        connectToDevice(deviceId, autoConnect = true)  // passive BLE controller scan
+    }, 3000)
+}
+```
+
+When native reconnects, it fires `onDeviceReady` again. The Dart side notices there's no pending completer (this isn't a fresh connect) and re-subscribes to the characteristics it was listening to:
+
+```dart
+void _handleDeviceReady(List<BleService> services) {
+  if (_deviceReadyCompleter != null && !_deviceReadyCompleter!.isCompleted) {
+    _deviceReadyCompleter!.complete(services);  // initial connect
+  } else {
+    _resubscribeAfterReconnect(services);  // native auto-reconnected
+  }
+}
+```
+
+The Transporter remembers which characteristics were active before the disconnect and re-subscribes automatically. From the app's perspective, the connection healed itself.
+
+### The full flow
+
+```
+User taps Connect
+  → Dart: manageDevice(uuid)           [one Pigeon call]
+  → Native: connectGatt / CBCentralManager.connect
+  → Native: discover services, negotiate MTU, bond if needed
+  → Native: onDeviceReady(uuid, services)
+  → Dart: transport ready, app streams audio
+
+Device goes out of range
+  → Native: onPeripheralDisconnected
+  → Native: auto-schedules reconnect
+            (iOS: chipset passive watch
+             Android: 3s delay + autoConnect)
+  → Dart: UI shows "disconnected"
+
+Device comes back in range
+  → Native: connects automatically (no scan, no poll)
+  → Native: rediscovers services
+  → Native: onDeviceReady(uuid, services)
+  → Dart: re-subscribes to characteristics
+  → Dart: UI shows "connected", audio resumes
+```
+
+No timers. No polling. No three-path reconnection. No debouncers. No ghost connections.
+
+---
+
+## The landmines
+
+Going native wasn't all clean architecture diagrams. Here are the things that bit me.
+
+### Android forgets your device after a Bluetooth toggle
+
+Toggle Bluetooth off and back on, and Android clears its BLE device cache for unbonded devices. Our device uses a static random BLE address (not public). After the toggle, Android defaults to `ADDRESS_TYPE_PUBLIC` and silently fails to connect.
+
+The fix is a single API call — `getRemoteLeDevice(address, ADDRESS_TYPE_RANDOM)` on API 34+ — but finding it took days of "why does toggling Bluetooth break everything?"
+
+### Stale GATT callbacks create phantom connections
+
+When a connection drops and you create a new `BluetoothGatt`, the old one's callbacks can still fire. If you don't reject them, you process disconnect events from connection attempt #1 while connection attempt #2 is happily connected. A ghost connection, this time from the native side.
+
+I track a `currentGattHash` — each connection attempt gets a fresh `BluetoothGattCallback` with a unique hash. Callbacks from old hashes are silently dropped.
+
+### Single owner or chaos
+
+The most important architectural decision: one entity owns the connection. On Android, `OmiBleForegroundService` is the single owner. On iOS, it's `OmiBleManager`. Dart code can't reach GATT directly, and the Connector has no access to the Transporter's internals — the layers are sealed by design.
+
+When we'd had four actors all managing connection state — Dart provider, Dart service, native BleManager, native ForegroundService — they created zombie GATT objects. Connections that existed in one layer's state but not another's. The single-owner model eliminated this entire class of bug.
+
+---
+
+## The results
+
+![Xcode Energy Diagnostics before and after the rewrite](/blog/our-ble-connection-was-a-ghost/energy-diagnostics.webp)
+*Xcode Energy Diagnostics, before and after.*
+
+I profiled the app with Xcode's Energy Diagnostics before and after.
+
+**Before:**
+- Energy impact: **Very High**
+- Overhead: 44.2% — the Dart↔native bridging cost on every BLE event
+- Network: 44.7% — active radio scanning every 15 seconds (this shows as "network" in the profiler)
+- CPU: 10.6% — Dart processing connection state, timers, debouncers
+
+**After:**
+- Energy impact: **Low**
+- CPU: 98.6% of a *much smaller total* — the app doing its actual work
+- Network: 0%
+- Overhead: 0%
+
+The Overhead and Network categories — 89% of our energy budget — went to zero. Crashes collapsed in the same window.
+
+![User feedback after the rollout: "Disconnects while the phone is in range have dropped off considerably with the last couple updates."](/blog/our-ble-connection-was-a-ghost/user-feedback.webp)
+*A user reporting back after the rollout.*
+
+I wasn't trying to fix battery. I was trying to fix ghost connections. The battery improvement was a side effect of not fighting the OS anymore.
+
+All the polling, bridging, and state coordination we'd been doing in Dart was work the OS could already do at the chipset level. Once we moved the connection lifecycle to native, that work didn't have to exist on our side anymore. We didn't optimize anything. We just stopped doing it.
+
+---
+
+## The cost
+
+Going native means maintaining BLE code on iOS and Android. Two languages, more debugging surface, platform-specific quirks to track. For us, the trade was clearly worth it. The Dart side ended up simpler too — the Connector that replaced the old provider does less, because most of the work it used to do is now happening in native code where it belongs.
+
+The ghost connections are gone. Not because we fixed them. Because we stopped creating them.
