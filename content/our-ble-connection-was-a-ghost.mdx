@@ -247,7 +247,7 @@ Going native wasn't all clean architecture diagrams. Here are the things that bi
 
 Toggle Bluetooth off and back on, and Android clears its BLE device cache for unbonded devices. Our device uses a static random BLE address (not public). After the toggle, Android defaults to `ADDRESS_TYPE_PUBLIC` and silently fails to connect.
 
-The fix is a single API call — `getRemoteLeDevice(address, ADDRESS_TYPE_RANDOM)` on API 34+ — but finding it took days of "why does toggling Bluetooth break everything?"
+The fix is a single API call — `getRemoteLeDevice(address, ADDRESS_TYPE_RANDOM)` on API 34+ — but finding it took hours of "why does toggling Bluetooth break everything?"
 
 ### Stale GATT callbacks create phantom connections
 
