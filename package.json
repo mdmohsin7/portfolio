@@ -6,7 +6,9 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "test": "vitest run",
+    "verify:agentic": "node scripts/verify-agentic.mjs"
   },
   "dependencies": {
     "@radix-ui/react-avatar": "^1.1.6",
@@ -46,6 +48,7 @@
     "eslint-config-next": "14.2.4",
     "postcss": "^8.5.3",
     "tailwindcss": "^3.4.17",
-    "typescript": "^5.8.3"
+    "typescript": "^5.8.3",
+    "vitest": "^2.1.9"
   }
 }

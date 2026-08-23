@@ -14,6 +14,10 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   return [
     { url: DATA.url, lastModified: new Date() },
     { url: `${DATA.url}/blog`, lastModified: new Date() },
+    { url: `${DATA.url}/developers`, lastModified: new Date() },
+    { url: `${DATA.url}/llms.txt`, lastModified: new Date() },
+    { url: `${DATA.url}/llms-full.txt`, lastModified: new Date() },
+    { url: `${DATA.url}/sitemap.md`, lastModified: new Date() },
     ...postEntries,
   ];
 }

@@ -3,8 +3,15 @@ import { getBlogPosts } from "@/data/blog";
 import Link from "next/link";
 
 export const metadata = {
-  title: "Blog",
-  description: "My thoughts on software development, life, and more.",
+  title: "Mohsin Mohammed Blog",
+  description:
+    "Engineering writing by Mohsin Mohammed on Bluetooth, Flutter, wearables, and systems work.",
+  alternates: {
+    canonical: "/blog",
+    types: {
+      "text/markdown": "/blog.md",
+    },
+  },
 };
 
 const BLUR_FADE_DELAY = 0.04;

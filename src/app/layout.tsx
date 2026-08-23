@@ -16,17 +16,29 @@ const fontSans = FontSans({
 export const metadata: Metadata = {
   metadataBase: new URL(DATA.url),
   title: {
-    default: DATA.name,
+    default: `${DATA.name} — mohsin.xyz`,
     template: `%s | ${DATA.name}`,
   },
   description: DATA.description,
+  authors: [{ name: DATA.name, url: DATA.url }],
+  creator: DATA.name,
+  publisher: DATA.name,
+  keywords: [
+    DATA.name,
+    "mohsin.xyz",
+    "Mohsin",
+    "mdmohsin7",
+    "Founding Engineer",
+    "Omi AI",
+    "Flutter",
+  ],
   openGraph: {
-    title: `${DATA.name}`,
+    title: `${DATA.name} — mohsin.xyz`,
     description: DATA.description,
     url: DATA.url,
     siteName: `${DATA.name}`,
     locale: "en_US",
-    type: "website",
+    type: "profile",
   },
   robots: {
     index: true,
@@ -40,8 +52,9 @@ export const metadata: Metadata = {
     },
   },
   twitter: {
-    title: `${DATA.name}`,
+    title: `${DATA.name} — mohsin.xyz`,
     card: "summary_large_image",
+    description: DATA.description,
   },
   verification: {
     google: "",
