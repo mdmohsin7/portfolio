@@ -1,6 +1,7 @@
 import {
   appendVaryAccept,
   getNotAcceptableBody,
+  isRscRequest,
   markdownApiPath,
   negotiateRequest,
 } from "@/lib/accept";
@@ -10,7 +11,7 @@ export function middleware(req: NextRequest) {
   const decision = negotiateRequest({
     pathname: req.nextUrl.pathname,
     accept: req.headers.get("accept"),
-    rsc: isRsc(req),
+    rsc: isRscRequest(req.headers),
     method: req.method,
   });
 
@@ -36,15 +37,6 @@ export function middleware(req: NextRequest) {
   const res = NextResponse.next();
   appendVaryAccept(res.headers);
   return res;
-}
-
-function isRsc(req: NextRequest): boolean {
-  return (
-    req.headers.has("rsc") ||
-    req.headers.has("next-router-state-tree") ||
-    req.headers.has("next-router-prefetch") ||
-    req.headers.has("next-action")
-  );
 }
 
 export const config = {

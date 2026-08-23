@@ -1,6 +1,8 @@
 import { describe, expect, it } from "vitest";
 import {
   getNotAcceptableBody,
+  isNextInternalAccept,
+  isRscRequest,
   markdownApiPath,
   negotiateRequest,
   preferredType,
@@ -86,7 +88,7 @@ describe("negotiateRequest", () => {
     ).toEqual({ action: "markdown", pathname: "/blog" });
   });
 
-  it("skips RSC navigations and returns 406 when nothing matches", () => {
+  it("skips RSC navigations and Next flight Accept types", () => {
     expect(
       negotiateRequest({
         pathname: "/",
@@ -95,6 +97,16 @@ describe("negotiateRequest", () => {
       }),
     ).toEqual({ action: "skip" });
 
+    expect(
+      negotiateRequest({
+        pathname: "/",
+        accept: "text/x-component, text/html, */*",
+        rsc: false,
+      }),
+    ).toEqual({ action: "skip" });
+  });
+
+  it("returns 406 when nothing matches", () => {
     expect(
       negotiateRequest({
         pathname: "/",
@@ -113,5 +125,14 @@ describe("negotiateRequest", () => {
   it("describes 406 bodies the way acceptmarkdown.com expects", () => {
     expect(getNotAcceptableBody()).toContain("text/markdown");
     expect(getNotAcceptableBody()).toContain("text/html");
+  });
+
+  it("detects Next internal flight headers and Accept types", () => {
+    expect(isNextInternalAccept("text/x-component")).toBe(true);
+    expect(isRscRequest(new Headers({ rsc: "1" }))).toBe(true);
+    expect(isRscRequest(new Headers({ "next-router-state-tree": "[]" }))).toBe(
+      true,
+    );
+    expect(isRscRequest(new Headers({ accept: "text/html" }))).toBe(false);
   });
 });

@@ -86,11 +86,21 @@ export function shouldNegotiatePath(pathname: string): boolean {
 }
 
 export function isRscRequest(headers: Headers): boolean {
+  return Boolean(
+    headers.get("rsc") ||
+      headers.get("next-router-state-tree") ||
+      headers.get("next-router-prefetch") ||
+      headers.get("next-action") ||
+      headers.get("next-url"),
+  );
+}
+
+export function isNextInternalAccept(accept: string | null): boolean {
+  if (!accept) return false;
+  const lower = accept.toLowerCase();
   return (
-    headers.has("rsc") ||
-    headers.has("next-router-state-tree") ||
-    headers.has("next-router-prefetch") ||
-    headers.has("next-action")
+    lower.includes("text/x-component") ||
+    lower.includes("text/x-server-inserted")
   );
 }
 
@@ -108,7 +118,7 @@ export function negotiateRequest(input: {
 }): NegotiateAction {
   const method = input.method ?? "GET";
   if (method !== "GET" && method !== "HEAD") return { action: "skip" };
-  if (input.rsc) return { action: "skip" };
+  if (input.rsc || isNextInternalAccept(input.accept)) return { action: "skip" };
   if (!shouldNegotiatePath(input.pathname)) return { action: "skip" };
 
   if (input.pathname.endsWith(".md")) {
