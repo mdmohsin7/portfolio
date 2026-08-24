@@ -1,7 +1,7 @@
 import { getBlogPosts } from "@/data/blog";
 import { DATA } from "@/data/resume";
-import fs from "fs";
-import path from "path";
+import { getNotFoundMarkdown, markdownResponse } from "@/lib/markdown";
+import { getRawPostMarkdown } from "@/lib/posts";
 
 export const dynamic = "force-static";
 
@@ -14,16 +14,11 @@ export async function GET(
   _req: Request,
   { params }: { params: { slug: string } },
 ) {
-  const filePath = path.join(process.cwd(), "content", `${params.slug}.mdx`);
-  if (!fs.existsSync(filePath)) {
-    return new Response("Not found", { status: 404 });
+  const content = getRawPostMarkdown(params.slug);
+  if (!content) {
+    return markdownResponse(getNotFoundMarkdown(), { status: 404 });
   }
-  let content = fs.readFileSync(filePath, "utf8");
-  // Absolutize /blog/... paths so the markdown is self-contained off-site.
-  content = content
-    .split('"/blog/').join(`"${DATA.url}/blog/`)
-    .split('(/blog/').join(`(${DATA.url}/blog/`);
-  return new Response(content, {
-    headers: { "Content-Type": "text/markdown; charset=utf-8" },
+  return markdownResponse(content, {
+    canonical: `${DATA.url}/blog/${params.slug}`,
   });
 }

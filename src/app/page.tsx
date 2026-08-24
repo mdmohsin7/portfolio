@@ -1,28 +1,47 @@
 import BlurFade from "@/components/magicui/blur-fade";
-import BlurFadeText from "@/components/magicui/blur-fade-text";
 import { ProjectCard } from "@/components/project-card";
 import { ResumeCard } from "@/components/resume-card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { DATA } from "@/data/resume";
+import { getHomepageJsonLd } from "@/lib/jsonld";
+import type { Metadata } from "next";
 import Link from "next/link";
 import Markdown from "react-markdown";
 
 const BLUR_FADE_DELAY = 0.04;
 
+export const metadata: Metadata = {
+  alternates: {
+    canonical: DATA.url,
+    types: {
+      "text/markdown": `${DATA.url}/index.md`,
+    },
+  },
+};
+
 export default function Page() {
   return (
     <main className="flex flex-col min-h-[100dvh] space-y-10">
+      <script
+        type="application/ld+json"
+        suppressHydrationWarning
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify(getHomepageJsonLd()),
+        }}
+      />
       <section id="hero">
         <div className="mx-auto w-full max-w-2xl space-y-8">
           <div className="gap-2 flex justify-between items-center">
             <div className="flex-col flex flex-1 space-y-1.5">
-              <BlurFadeText
-                delay={BLUR_FADE_DELAY}
-                className="text-2xl font-bold tracking-tighter sm:text-4xl xl:text-5xl/none"
-                yOffset={8}
-                text={`Hi, I'm ${DATA.name.split(" ")[0]} 👋`}
-              />
+              <BlurFade delay={BLUR_FADE_DELAY} yOffset={8}>
+                <h1 className="text-2xl font-bold tracking-tighter sm:text-4xl xl:text-5xl/none">
+                  Hi, I&apos;m {DATA.name.split(" ")[0]} 👋
+                </h1>
+              </BlurFade>
+              <p className="sr-only">
+                {DATA.name} — mohsin.xyz. {DATA.description}
+              </p>
             </div>
             <BlurFade delay={BLUR_FADE_DELAY}>
               <Avatar className="size-28 border">
