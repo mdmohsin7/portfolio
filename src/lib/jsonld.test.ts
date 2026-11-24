@@ -17,6 +17,8 @@ describe("homepage JSON-LD", () => {
     expect(person.description.length).toBeGreaterThan(20);
     expect(person.sameAs).toEqual(getSameAs());
     expect(person.sameAs.length).toBeGreaterThanOrEqual(3);
-    expect(person.jobTitle).toBeTruthy();
+    expect(person.jobTitle).toBe("Software Engineer");
+    expect(person.address.addressLocality).toBe("Hyderabad");
+    expect("worksFor" in person).toBe(false);
   });
 });

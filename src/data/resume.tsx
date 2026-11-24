@@ -5,12 +5,12 @@ export const DATA = {
   name: "Mohsin Mohammed",
   initials: "MM",
   url: "https://mohsin.xyz",
-  location: "San Francisco, CA",
-  locationLink: "https://www.google.com/maps/place/sanfrancisco",
+  location: "Hyderabad, India (Remote)",
+  locationLink: "https://www.google.com/maps/place/Hyderabad",
   description:
-    "Founding Engineer at Omi AI. Flutter & Full Stack Developer passionate about AI, mobile development, and open source. Currently building the future of wearable AI.",
+    "Full-stack, mobile, and systems engineer passionate about AI, low-level engineering, and open source. Previously Founding Engineer at Omi AI.",
   summary:
-    "I'm a Founding Engineer at [Omi AI](https://omi.me), building the future of wearable AI. I've shipped products used by **500,000+ users**, architected systems that reduced response times by **75%**, and created a Flutter course with **14,000+ students** (4.9★ rating). I love reverse-engineering protocols, optimizing performance, and turning complex problems into elegant solutions. When I'm not coding, you'll find me writing about my engineering adventures on my blog.",
+    "I'm a software engineer who works across mobile, systems, and AI — owning products from zero to scale. Previously Founding Engineer at [Omi AI](https://omi.me), I've shipped products used by **500,000+ users**, architected systems that reduced response times by **75%**, and created a Flutter course with **14,000+ students** (4.9★ rating). I love reverse-engineering protocols, optimizing performance, and turning complex problems into elegant solutions. When I'm not coding, you'll find me writing about my engineering adventures on my blog.",
   avatarUrl: "/me.webp",
   skills: [
     "Flutter",
@@ -83,13 +83,13 @@ export const DATA = {
       company: "Omi AI",
       href: "https://omi.me",
       badges: [],
-      location: "San Francisco (Hybrid)",
+      location: "Hyderabad (Remote)",
       title: "Founding Engineer",
       logoUrl: "/omi.webp",
       start: "Jun 2024",
-      end: "Present",
+      end: "Nov 2026",
       description:
-        "Building the future of wearable AI as one of the first engineers. Built the macOS app with a custom audio pipeline that records conversations without virtual audio drivers. Integrated third-party wearables enabling anyone with any device to use Omi. Architected the App Store infrastructure powering 1M+ app uses with 4,000+ third-party apps. And much more.",
+        "One of 4 full-time people running a global hardware company, owning product, engineering, and logistics end-to-end as we scaled to $70K MRR. Migrated the BLE stack from Flutter to native Swift/Kotlin and designed the DCT multi-protocol architecture, reverse-engineering undocumented BLE protocols to support third-party wearables like the Limitless Pendant with no vendor SDK. Built a native macOS audio pipeline (system + mic mixing without virtual drivers), background audio/location tracking, the App Store infrastructure powering 1M+ uses across 4,000+ apps, and internal AI agents running support, logistics, and feature development.",
     },
     {
       company: "Google Summer of Code (AOSSIE)",

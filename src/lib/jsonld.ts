@@ -12,26 +12,39 @@ export function getSameAs(): string[] {
 }
 
 export function getPersonJsonLd() {
+  const currentRole = (
+    DATA.work as ReadonlyArray<{
+      company: string;
+      href: string;
+      title: string;
+      end?: string;
+    }>
+  ).find((job) => !job.end || job.end === "Present");
+
   return {
     "@type": "Person",
     "@id": PERSON_ID,
     name: DATA.name,
     url: DATA.url,
     image: `${DATA.url}${DATA.avatarUrl}`,
-    jobTitle: DATA.work[0]?.title ?? "Software Engineer",
+    jobTitle: currentRole?.title ?? "Software Engineer",
     description: DATA.description,
     email: DATA.contact.social.email.url,
     address: {
       "@type": "PostalAddress",
-      addressLocality: "San Francisco",
-      addressRegion: "CA",
-      addressCountry: "US",
+      addressLocality: "Hyderabad",
+      addressRegion: "Telangana",
+      addressCountry: "IN",
     },
-    worksFor: {
-      "@type": "Organization",
-      name: DATA.work[0]?.company,
-      url: DATA.work[0]?.href,
-    },
+    ...(currentRole
+      ? {
+          worksFor: {
+            "@type": "Organization",
+            name: currentRole.company,
+            url: currentRole.href,
+          },
+        }
+      : {}),
     sameAs: getSameAs(),
   };
 }
